@@ -1,4 +1,5 @@
 <template>
+
   <Loading v-if="postsState.loading"/>
   
   <Error v-if="postsState.error" :error="posts.error"/>
@@ -18,7 +19,7 @@ import usePosts from '@/hooks/usePosts';
 
 export default {
   setup() {
-    const postsState = usePosts("awww");
+    const postsState = usePosts("all");
 
     const posts = computed(() => postsState.data.map((child) => child.data));
 

@@ -8,6 +8,9 @@
         See Full Image
       </a>
     </div>
+
+    <CardCarousel v-if="post.media_metadata" :images="post.media_metadata"/>
+
     <div v-if="isVideo()" class="card-image waves-effect waves-block waves-light videoControl">
       <video class="center" controls autoplay="autoplay">
         <source :src="getVideoUrl()" type="video/mp4">
@@ -21,6 +24,8 @@
 </template>
 
 <script>
+import CardCarousel from '@/components/card/CardCarousel';
+
 export default {
   data() {
     return {
@@ -59,6 +64,9 @@ export default {
         this.seeFullImage = true;
       }
     }
+  },
+  components: {
+    CardCarousel,
   },
 }
 </script>
