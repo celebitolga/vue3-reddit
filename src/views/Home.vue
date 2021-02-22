@@ -1,7 +1,7 @@
 <template>
   <Loading v-if="posts.loading"/>
   
-  <Error v-if="posts.error"/>
+  <Error v-if="posts.error" :error="posts.error"/>
 </template>
 
 <script>
@@ -11,7 +11,7 @@ import Error from '@/components/common/Error'
 
 export default {
   setup() {
-    const posts = usePosts("all");
+    const posts = usePosts("allss");
 
     return {
       posts,
