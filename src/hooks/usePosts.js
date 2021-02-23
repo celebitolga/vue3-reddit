@@ -22,7 +22,9 @@ export default function usePosts(subreddit) {
     }
   }
 
-  watch(subreddit, loadData, { immediate: true });
+  watch(() => subreddit, (value, oldValue) => {
+    loadData();
+  }, { immediate: true });
   //loadData(); immeditate: true
 
 

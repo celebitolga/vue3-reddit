@@ -19,7 +19,7 @@ import usePosts from '@/hooks/usePosts';
 
 export default {
   setup() {
-    const postsState = usePosts("all");
+    const postsState = usePosts("aww");
 
     const posts = computed(() => postsState.data.map((child) => child.data));
 
