@@ -1,11 +1,11 @@
 <template>
 
-  <SubReddit name="all"/>
-
+  <SubReddit :name="$route.params.text"/>
+  
 </template>
 
 <script>
-import SubReddit from '@/components/SubReddit'
+import SubReddit from '@/components/SubReddit';
 
 export default {
   setup() {

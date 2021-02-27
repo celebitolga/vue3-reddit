@@ -2,7 +2,7 @@
   <nav>
     <div class="nav-wrapper light-blue darken-4">
       <div class="container">
-        <a href="#" class="brand-logo">Reddit Client</a>
+        <router-link tag="a" to="/" class="brand-logo">Reddit Client</router-link>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <!-- <li><a href="sass.html">Sass</a></li> -->
         </ul>

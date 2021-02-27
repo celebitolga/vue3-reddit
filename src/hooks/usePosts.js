@@ -1,5 +1,5 @@
 import { reactive, watch } from 'vue';
-import API from '@/lib/api'
+import API from '@/lib/api';
 
 export default function usePosts(subreddit) {
   const postsState = reactive({

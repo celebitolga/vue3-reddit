@@ -1,6 +1,6 @@
 <template>
   <div class="card cardControl">
-    <div v-if="isImage() && !post.is_video" class="card-image waves-effect waves-block waves-light imageControl">
+    <div v-if="isImage && !post.is_video" class="card-image waves-effect waves-block waves-light imageControl">
       <div class="imageControlBlock">
         <img ref="imageSize" class="activator" :src="post.url">
       </div>
@@ -11,9 +11,9 @@
 
     <CardCarousel v-if="post.media_metadata" :images="post.media_metadata"/>
 
-    <div v-if="isVideo()" class="card-image waves-effect waves-block waves-light videoControl">
+    <div v-if="isVideo" class="card-image waves-effect waves-block waves-light videoControl">
       <video class="center" controls autoplay="autoplay" loop="loop">
-        <source :src="getVideoUrl()" type="video/mp4">
+        <source :src="videoUrl" type="video/mp4">
       </video>
     </div>
     <div class="card-content">
@@ -26,18 +26,20 @@
 <script>
 import CardCarousel from '@/components/card/CardCarousel';
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 export default {
   setup(props) {
     const imageSize = ref(null);
     const seeFullImage = ref(false);
 
-    const isImage = () => {
-      return props.post.url.match(/bmp|webp|png|jpg|jpeg|gif$/);
-    }
+    // const isImage = () => {
+    //   return props.post.url.match(/bmp|webp|png|jpg|jpeg|gif$/);
+    // }
 
-    const isVideo = () => {
+    const isImage = computed(() => props.post.url.match(/bmp|webp|png|jpg|jpeg|gif$/));
+
+    const isVideo = computed(() => {
       if(props.post.crosspost_parent_list) {
         return props.post.crosspost_parent_list[0].is_video;
       }
@@ -45,14 +47,14 @@ export default {
         return true;
       }
       return false;
-    }
+    });
 
-    const getVideoUrl = () => {
+    const videoUrl = computed(() => {
       if(props.post.crosspost_parent_list != null && props.post.crosspost_parent_list[0].is_video) {
         return props.post.crosspost_parent_list[0].secure_media.reddit_video.fallback_url;
       }
       return props.post.secure_media.reddit_video.fallback_url;
-    }
+    });
 
     const checkImageSize = () => {
       if(imageSize._rawValue != null) {
@@ -61,6 +63,7 @@ export default {
         }
       }
     }
+    
 
     onMounted(() => {
       checkImageSize();
@@ -71,7 +74,7 @@ export default {
       seeFullImage,
       isImage,
       isVideo,
-      getVideoUrl,
+      videoUrl,
     }
   },
   props: {
