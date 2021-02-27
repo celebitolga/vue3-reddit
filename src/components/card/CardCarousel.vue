@@ -1,27 +1,53 @@
 <template>
   <div class="carousel carousel-slider center">
-    <div class="carousel-item red white-text" href="#one!" v-for="(key) in images" :key="key">
+    <div class="carousel-item deneme" v-for="(key) in images" :key="key">
       <img :src="getImageUrl(key)">
     </div>
   </div>
 </template>
 
 <script>
+import { onMounted } from 'vue';
+
 export default {
+  setup() {
+    let instances;
+
+    const getImageUrl = (key) => {
+      return key.p[3].u.replace(/amp;/g, '')
+    }
+    onMounted(() => {
+      var elems = document.querySelectorAll('.carousel');
+      instances = M.Carousel.init(elems);
+    })
+
+    return {
+      getImageUrl,
+    }
+  },
   props: {
     images: {
       type: Object,
       required: true,
     },
   },
-  methods: {
-    getImageUrl(key) {
-      return key.p[3].u.replace(/amp;/g, '')
-    }
-  },
 }
 </script>
 
 <style>
+.carousel {
+  max-height: 300px;
+}
+
+.deneme {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.deneme img {
+  /* height: 100%; */
+}
 
 </style>

@@ -1,7 +1,8 @@
 <template>
   <div class="card cardControl">
+
     <div v-if="isImage && !post.is_video" class="card-image waves-effect waves-block waves-light imageControl">
-      <div class="imageControlBlock">
+      <div class="imageControlBlock" :class="{'materialboxed': seeFullImage}" @click="open($event)">
         <img ref="imageSize" class="activator" :src="post.url">
       </div>
       <a v-if="seeFullImage" class="seeFullImage" :href="post.url" target="_blank">
@@ -16,22 +17,26 @@
         <source :src="videoUrl" type="video/mp4">
       </video>
     </div>
+
     <div class="card-content">
+      <div v-if="post.media_metadata" class="sliderControl">Slider</div>
       <span class="card-title activator grey-text text-darken-4 titleControl"> {{post.title}} </span>
       <p><a :href="`https://reddit.com${post.permalink}`">{{post.num_comments}} Comments</a></p>
     </div>
+    
   </div>
 </template>
 
 <script>
 import CardCarousel from '@/components/card/CardCarousel';
 
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch, onUpdated } from 'vue'
 
 export default {
   setup(props) {
     const imageSize = ref(null);
-    const seeFullImage = ref(false);
+    // const seeFullImage = ref(false);
+    const imageSizeControl = ref(false);
 
     // const isImage = () => {
     //   return props.post.url.match(/bmp|webp|png|jpg|jpeg|gif$/);
@@ -57,24 +62,52 @@ export default {
     });
 
     const checkImageSize = () => {
-      if(imageSize._rawValue != null) {
+      if(imageSize.value != null) {
         if(imageSize.value.height > 520) {
-          seeFullImage.value = true;
+          return true;
         }
+      } else {
+        return false;
       }
     }
     
+    const seeFullImage = computed(() => {
+      if(imageSize.value != null) {
+        if(imageSize.value.height > 520) {
+          return true;
+        }
+      }
+    })
+
+
+    watch(seeFullImage, (value, oldValue) => {
+      return value
+    }, {immediate:true})
+
 
     onMounted(() => {
-      checkImageSize();
+      var elems = document.querySelectorAll('.materialboxed');
+      var instances = M.Materialbox.init(elems);
     });
+
+    onUpdated(() => {
+      checkImageSize();
+    })
+
+
+    // ! Güncelle, alt classı veriyor!
+    const open = ($event) => {
+      console.log($event.target.className);
+    }
 
     return {
       imageSize,
       seeFullImage,
+      imageSizeControl,
       isImage,
       isVideo,
       videoUrl,
+      open,
     }
   },
   props: {
@@ -101,10 +134,7 @@ export default {
       max-width: 380px;
       margin: 0 auto;
       overflow: hidden;
-      max-height:512px
-      img {
-
-      }
+      max-height:512px;
     }
   }
   
@@ -142,5 +172,15 @@ export default {
 
   .titleControl {
     word-wrap: break-word
+  }
+
+  .sliderControl {
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .waves-ripple {
+    z-index: 999!important;
+    opacity: 1!important;
   }
 </style>>
