@@ -17,6 +17,7 @@ import Cards from '@/components/card/Cards'
 
 import usePosts from '@/hooks/usePosts';
 
+
 import { computed, watch } from 'vue';
 
 export default {
@@ -26,13 +27,15 @@ export default {
     watch(() => props.name, (value, oldValue) => {
       postsState = usePosts(props.name);
     });
+
     watch(() => postsState, (value, oldValue) => {
       console.log(value);
     });
 
     const posts = computed(() => {
-      //console.log(props.name);
-      return postsState.data.map((child) => child.data);
+      if(props.name) {
+        return postsState.data.map((child) => child.data);
+      }
     });
     
     return {

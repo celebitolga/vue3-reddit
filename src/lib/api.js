@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 async function getPosts(subreddit) {
-  const url = `https://www.reddit.com/r/${subreddit}.json`;
+  const url = `https://www.reddit.com/r/${subreddit}.json?limit=10`;
   const response = await axios.get(url)
     .then(res => res.data.data.children)
     .catch(err => {
