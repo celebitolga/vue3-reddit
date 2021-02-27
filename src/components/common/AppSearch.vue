@@ -4,7 +4,7 @@
       <div class="row">
         <div class="input-field col s12">
           <i class="material-icons prefix">textsms</i>
-          <input ref="autocomplete" type="text" id="autocomplete-input" class="autocomplete" v-model="searchText">
+          <input ref="autocomplete" type="text" id="autocomplete-input" class="autocomplete" v-model="searchText" @keypress.enter="search()">
           <label for="autocomplete-input">Autocomplete</label>
         </div>
       </div>
@@ -27,6 +27,8 @@ export default {
     let searchState = null;
     let foo = ref([]);
 
+    var instances;
+
     let debounceTimeout;
 
     watch(searchText, async (value, oldValue) => {
@@ -36,19 +38,21 @@ export default {
         if(searchText.value.length > 2) {
           loadData(searchText.value);
         }
-      },500);
+      },300);
     })
 
     function setFoo() {
       searchState.map((item) => {
-        foo.value[item] = null;
+        foo.value[item.display_name] = null;
       })
     }
 
-    // const search = () => {
-    //   router.push('/' + searchText.value);
-    //   searchText.value = '';
-    // }
+    const search = () => {
+      if(instances != null) {
+        router.push('/' + instances.$el[0].value);
+        searchText.value = '';
+      }
+    }
 
 
     async function loadData(params = 'all') {
@@ -61,8 +65,9 @@ export default {
     }
 
     onMounted(() => {
-      var instances = M.Autocomplete.init(autocomplete._value, {
+      instances = M.Autocomplete.init(autocomplete._value, {
         data: foo.value,
+        onAutocomplete: search,
       });
 
       loadData();
@@ -71,7 +76,7 @@ export default {
     return {
       autocomplete,
       searchText,
-      // search,
+      search,
     }
   },
 }

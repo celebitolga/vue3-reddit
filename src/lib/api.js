@@ -15,7 +15,7 @@ async function getSearch(params) {
   const url = `https://www.reddit.com/search.json?q=${params}&type=sr&limit=50`;
   const response = await axios
     .get(url)
-    .then(response => response.data.data.children.map(child => child.data.display_name))
+    .then(response => response.data.data.children.map(child => child.data))
     .catch(err => {
       throw err;
     });
