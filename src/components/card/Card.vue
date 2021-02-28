@@ -79,5 +79,6 @@ export default {
   .sliderControl {
     text-align: center;
     text-transform: uppercase;
+    font-weight: bold;
   }
 </style>>

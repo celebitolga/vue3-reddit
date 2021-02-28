@@ -19,6 +19,7 @@ async function getSearch(params) {
     .catch(err => {
       throw err;
     });
+  
   return response;
 }
 

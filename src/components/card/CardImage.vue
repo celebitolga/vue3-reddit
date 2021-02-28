@@ -3,53 +3,18 @@
     <div ref="imageSize" class="imageControlBlock">
       <img class="activator" :src="getImageUrl()">
     </div>
-    <a v-show="seeFullImage" class="seeFullImage" :href="getImageUrl()" target="_blank">
+    <a v-if="seeFullImage" class="seeFullImage" :href="getImageUrl()" target="_blank">
       See Full Image
     </a>
   </div>
 </template>
 
 <script>
-import { ref, onUpdated, onMounted } from 'vue';
 
 export default {
-  setup(props) {
-    const imageSize = ref(null);
-    const seeFullImage = ref(false);
-    
-
-    const getImageUrl = () => {
-      if(props.post.url.endsWith('.gifv')) {
-        return props.post.url.replace('.gifv', '.gif');
-      } else {
-        return props.post.url;
-      }
-    }
-
-    const checkImageSize = () => {
-      if(imageSize.value != null) {
-        if(imageSize.value.offsetHeight > 500) {
-          seeFullImage.value = true;
-        }
-      } else {
-        seeFullImage.value = false;
-      }
-    }
-
-    onMounted(() => {
-      setTimeout(() => {
-        checkImageSize();
-      }, 50)
-    });
-
-    onUpdated(() => {
-      checkImageSize();
-    })
-
+  data() {
     return {
-      imageSize,
-      seeFullImage,
-      getImageUrl,
+      seeFullImage: false,
     }
   },
   props: {
@@ -57,6 +22,34 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  methods: {
+    getImageUrl() {
+      if(this.post.url.endsWith('.gifv')) {
+        return this.post.url.replace('.gifv', '.gif');
+      } else {
+        return this.post.url;
+      }
+    },
+    checkImageSize() {
+      if(this.$refs.imageSize != null) {
+        if(this.$refs.imageSize.offsetHeight > 500) {
+          this.seeFullImage = true;
+        }
+      } else {
+        this.seeFullImage = false;
+      }
+    },
+  },
+  mounted () {
+    setTimeout(() => {
+      this.checkImageSize();
+    }, 50)
+  },
+  updated () {
+    setTimeout(() => {
+      this.checkImageSize();
+    }, 50)
   },
 }
 </script>
