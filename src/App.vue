@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import Nav from './components/common/Nav';
-import AppSearch from './components/common/AppSearch.vue';
+import Nav from '@/components/common/Nav';
+import AppSearch from '@/components/common/AppSearch.vue';
 
 export default {
   components: {
