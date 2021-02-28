@@ -1,22 +1,11 @@
 <template>
   <div class="card cardControl">
 
-    <div v-if="isImage && !post.is_video" class="card-image waves-effect waves-block waves-light imageControl">
-      <div class="imageControlBlock" :class="{'materialboxed': seeFullImage}" @click="open($event)">
-        <img ref="imageSize" class="activator" :src="post.url">
-      </div>
-      <a v-if="seeFullImage" class="seeFullImage" :href="post.url" target="_blank">
-        See Full Image
-      </a>
-    </div>
+    <CardImage v-if="isImage && !post.is_video" :post="post"/>
 
     <CardCarousel v-if="post.media_metadata" :images="post.media_metadata"/>
 
-    <div v-if="isVideo" class="card-image waves-effect waves-block waves-light videoControl">
-      <video class="center" controls autoplay="autoplay" loop="loop">
-        <source :src="videoUrl" type="video/mp4">
-      </video>
-    </div>
+    <CardVideo v-if="isVideo" :videoUrl="videoUrl"/>
 
     <div class="card-content">
       <div v-if="post.media_metadata" class="sliderControl">Slider</div>
@@ -29,20 +18,15 @@
 
 <script>
 import CardCarousel from '@/components/card/CardCarousel';
+import CardImage from '@/components/card/CardImage';
+import CardVideo from '@/components/card/CardVideo';
 
-import { ref, onMounted, computed, watch, onUpdated } from 'vue'
+import { computed } from 'vue';
 
 export default {
   setup(props) {
-    const imageSize = ref(null);
-    // const seeFullImage = ref(false);
-    const imageSizeControl = ref(false);
 
-    // const isImage = () => {
-    //   return props.post.url.match(/bmp|webp|png|jpg|jpeg|gif$/);
-    // }
-
-    const isImage = computed(() => props.post.url.match(/bmp|webp|png|jpg|jpeg|gif$/));
+    const isImage = computed(() => props.post.url.match(/bmp|webp|png|jpg|jpeg|gif|gifv$/));
 
     const isVideo = computed(() => {
       if(props.post.crosspost_parent_list) {
@@ -61,53 +45,11 @@ export default {
       return props.post.secure_media.reddit_video.fallback_url;
     });
 
-    const checkImageSize = () => {
-      if(imageSize.value != null) {
-        if(imageSize.value.height > 520) {
-          return true;
-        }
-      } else {
-        return false;
-      }
-    }
-    
-    const seeFullImage = computed(() => {
-      if(imageSize.value != null) {
-        if(imageSize.value.height > 520) {
-          return true;
-        }
-      }
-    })
-
-
-    watch(seeFullImage, (value, oldValue) => {
-      return value
-    }, {immediate:true})
-
-
-    onMounted(() => {
-      var elems = document.querySelectorAll('.materialboxed');
-      var instances = M.Materialbox.init(elems);
-    });
-
-    onUpdated(() => {
-      checkImageSize();
-    })
-
-
-    // ! Güncelle, alt classı veriyor!
-    const open = ($event) => {
-      console.log($event.target.className);
-    }
 
     return {
-      imageSize,
-      seeFullImage,
-      imageSizeControl,
       isImage,
       isVideo,
       videoUrl,
-      open,
     }
   },
   props: {
@@ -118,6 +60,8 @@ export default {
   },
   components: {
     CardCarousel,
+    CardImage,
+    CardVideo,
   },
 }
 </script>
@@ -127,48 +71,6 @@ export default {
     width: 100%;
     max-width: 640px;
   }
-  .imageControl {
-    max-height: 512px;
-    .imageControlBlock {
-      width: 100%;
-      max-width: 380px;
-      margin: 0 auto;
-      overflow: hidden;
-      max-height:512px;
-    }
-  }
-  
-  .seeFullImage {
-    z-index: 999;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .5px;
-    line-height: 24px;
-    text-transform: uppercase;
-    background-color: rgba(80,85,87,.8);
-    border-radius: 4px;
-    bottom: 16px;
-    color: #fff;
-    line-height: 32px;
-    position: absolute;
-    text-align: center;
-    text-decoration: none;
-    width: 320px;
-    left: 50%;
-    transform: translate(-50%);
-  }
-
-  .videoControl {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    video {
-      width: 100%;
-      max-width: 640px;
-      max-height: 650px;
-    }
-  }
 
   .titleControl {
     word-wrap: break-word
@@ -177,10 +79,5 @@ export default {
   .sliderControl {
     text-align: center;
     text-transform: uppercase;
-  }
-
-  .waves-ripple {
-    z-index: 999!important;
-    opacity: 1!important;
   }
 </style>>

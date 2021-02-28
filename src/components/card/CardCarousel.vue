@@ -11,14 +11,15 @@ import { onMounted } from 'vue';
 
 export default {
   setup() {
-    let instances;
 
     const getImageUrl = (key) => {
-      return key.p[3].u.replace(/amp;/g, '')
+      if(key.p[3]) {
+        return key.p[3].u.replace(/amp;/g, '')
+      }
     }
     onMounted(() => {
       var elems = document.querySelectorAll('.carousel');
-      instances = M.Carousel.init(elems);
+      var instances = M.Carousel.init(elems);
     })
 
     return {
