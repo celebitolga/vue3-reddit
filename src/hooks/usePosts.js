@@ -1,7 +1,7 @@
 import { reactive, watch } from 'vue';
 import API from '@/lib/api';
 
-export default function usePosts(subreddit) {
+export default function usePosts(subreddit, limit) {
   const postsState = reactive({
     loading: false,
     error: '',
@@ -14,7 +14,7 @@ export default function usePosts(subreddit) {
       postsState.error = '';
       postsState.data = [];
 
-      postsState.data = await API.getPosts(subreddit);
+      postsState.data = await API.getPosts(subreddit, limit);
     } catch (error) {
       postsState.error = error.message || "Error loading posts.";
     } finally {

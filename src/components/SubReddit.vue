@@ -18,17 +18,17 @@ import Cards from '@/components/card/Cards'
 import usePosts from '@/hooks/usePosts';
 
 
-import { computed, watch } from 'vue';
+import { computed, watch, onMounted } from 'vue';
 
 export default {
   setup(props) {
-    let postsState = usePosts(props.name);
+    let postsState = usePosts(props.name, 10);
 
     watch(() => props.name, (value, oldValue) => {
-      postsState = usePosts(props.name);
+      postsState = usePosts(props.name, 10);
     });
 
-    watch(() => postsState, (value, oldValue) => {
+    watch(() => postsState.data, (value, oldValue) => {
       console.log(value);
     });
 
@@ -37,6 +37,20 @@ export default {
         return postsState.data.map((child) => child.data);
       }
     });
+
+    let i = true;
+    async function control() {
+      // ! Vuex kullan
+      if(this.document.firstElementChild.offsetHeight - this.document.firstElementChild.scrollTop < 1500 && i) {
+        window.removeEventListener('scroll', () => { });
+        console.log(usePosts(props.name, 20));
+        i = false;
+      }
+    }
+
+    onMounted(() => {
+      window.addEventListener('scroll', control);
+    })
     
     return {
       postsState,

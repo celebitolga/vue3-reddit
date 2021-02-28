@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import SubReddit from '@/components/SubReddit'
+import SubReddit from '@/components/SubReddit';
 
 export default {
   setup() {
