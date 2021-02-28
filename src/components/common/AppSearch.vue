@@ -13,71 +13,58 @@
 </template>
 
 <script>
-import { useRouter } from 'vue-router';
-import { ref, watch, onMounted } from 'vue';
-
-
-import API from "@/lib/api";
 
 export default {
-  setup() {
-    const autocomplete = ref(null)
-    const router = useRouter();
-    const searchText = ref('');
-    let searchState = null;
-    let foo = ref([]);
+  data() {
+    return {
+      instances: null,
+      searchText: '',
+      foo: [],
+      debounceTimeout: null,
+    }
+  },
+  computed: {
+    searchState() {
+      return this.$store.getters.getSearch;
+    }
+  },
+  watch: {
+    searchText(newValue, oldValue) {
+      clearTimeout(this.debounceTimeout);
 
-    var instances;
-
-    let debounceTimeout;
-
-    watch(searchText, async (value, oldValue) => {
-      clearTimeout(debounceTimeout);
-
-      debounceTimeout = setTimeout(() => {
-        if(searchText.value.length > 2) {
-          loadData(searchText.value);
+      this.debounceTimeout = setTimeout(() => {
+        if(this.searchText.length > 2) {
+          this.loadData(this.searchText);
         }
       },300);
-    })
-
-    function setFoo() {
-      searchState.map((item) => {
-        foo.value[item.display_name] = null;
+    },
+  },
+  methods: {
+    async loadData(params = 'all') {
+      await this.$store.dispatch("getSearch", params);
+      this.setFoo();
+    }, 
+    search() {
+      if(this.instances != null) {
+        this.$router.push('/' + this.instances.$el[0].value)
+        this.searchText = '';
+        this.$refs.autocomplete.blur();
+      }
+    }, 
+    setFoo() {
+      this.searchState.map((item) => {
+        this.foo[item.display_name] = null;
       })
-    }
-
-    const search = () => {
-      if(instances != null) {
-        router.push('/' + instances.$el[0].value);
-        searchText.value = '';
-      }
-    }
-
-
-    async function loadData(params = 'all') {
-      try {
-        searchState = await API.getSearch(params);
-        setFoo();
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    onMounted(() => {
-      instances = M.Autocomplete.init(autocomplete._value, {
-        data: foo.value,
-        onAutocomplete: search,
-      });
-
-      loadData();
-    })
-
-    return {
-      autocomplete,
-      searchText,
-      search,
-    }
+    },
+  },
+  created() {
+    this.loadData();
+  },
+  mounted() {
+    this.instances = M.Autocomplete.init(this.$refs.autocomplete, {
+      data: this.foo,
+      onAutocomplete: this.search,
+    });
   },
 }
 </script>
