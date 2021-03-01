@@ -44,7 +44,7 @@ export default createStore({
       let error = state.posts.error;
       let data = state.posts.data;
       commit("setPosts", { loading, newPostsLoading, error, data });
-
+      
       try {
         data = await API.getPosts(payload.subreddit, payload.limit);
       } catch (err) {

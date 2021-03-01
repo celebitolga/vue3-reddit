@@ -24,6 +24,7 @@ export default {
   watch: {
     name(newValue, oldValue) {
       this.$store.dispatch('getPosts', {subreddit: newValue, limit: 10});
+      this.page = 1;
     }
   },
   computed: {
@@ -33,7 +34,7 @@ export default {
       } else {
         return {
           loading: true,
-          newPostsLoading: false,
+          newPostsLoading: true,
           error: '',
           data: [],
         }
@@ -50,7 +51,7 @@ export default {
         this.page = page;
       }
     },
-    async control() {
+    control() {
       if (window.document.firstElementChild.offsetHeight - window.document.firstElementChild.scrollTop < 1500 && this.page == 1) {
         this.updatePosts(20, 2);
       } else if(window.document.firstElementChild.offsetHeight - window.document.firstElementChild.scrollTop < 1500 && this.page == 2) {
@@ -69,7 +70,7 @@ export default {
         this.updatePosts(90, 9);
       } else if (window.document.firstElementChild.offsetHeight - window.document.firstElementChild.scrollTop < 1500 && this.page == 9) {
         this.updatePosts(100, 10);
-        window.removeEventListener('scroll', () => { });
+        window.removeEventListener('scroll', this.control);
       }
     },
   },
@@ -78,6 +79,9 @@ export default {
   },
   mounted() {
     window.addEventListener('scroll', this.control);
+  },
+  unmounted() {
+    window.removeEventListener('scroll', this.control);
   },
   components: {
     Loading,
