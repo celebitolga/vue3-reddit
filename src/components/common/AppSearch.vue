@@ -46,7 +46,8 @@ export default {
     }, 
     search() {
       if(this.instances != null) {
-        this.$router.push('/' + this.instances.$el[0].value)
+        const where = this.instances.$el[0].value.toLowerCase();
+        this.$router.push('/' + where);
         this.searchText = '';
         this.$refs.autocomplete.blur();
       }
