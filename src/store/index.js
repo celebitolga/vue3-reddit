@@ -6,6 +6,7 @@ export default createStore({
     return {
       posts: {
         loading: false,
+        newPostsLoading: false,
         error: "",
         data: []
       },
@@ -23,9 +24,10 @@ export default createStore({
   actions: {
     async getPosts({ commit }, payload) {
       let loading = true;
+      let newPostsLoading = false;
       let error = "";
       let data = [];
-      commit("setPosts", { loading, error, data });
+      commit("setPosts", { loading, newPostsLoading, error, data });
 
       try {
         data = await API.getPosts(payload.subreddit, payload.limit);
@@ -33,21 +35,23 @@ export default createStore({
         error = err.message || "Error loading posts.";
       } finally {
         loading = false;
-        commit("setPosts", { loading, error, data });
+        commit("setPosts", { loading, newPostsLoading, error, data });
       }
     },
     async updatePosts({ commit, state }, payload) {
       let loading = state.posts.loading;
+      let newPostsLoading = true;
       let error = state.posts.error;
       let data = state.posts.data;
+      commit("setPosts", { loading, newPostsLoading, error, data });
 
       try {
         data = await API.getPosts(payload.subreddit, payload.limit);
       } catch (err) {
         error = err.message || "Error loading posts.";
       } finally {
-        loading = false;
-        commit("setPosts", { loading, error, data });
+        newPostsLoading = false;
+        commit("setPosts", { loading, newPostsLoading, error, data });
       }
     },
     async getSearch({ commit }, payload) {

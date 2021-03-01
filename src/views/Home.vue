@@ -1,17 +1,17 @@
 <template>
 
-  <SubReddit name="all"/>
+  <AppPage name="all"/>
 
 </template>
 
 <script>
-import SubReddit from '@/components/page/SubReddit';
+import AppPage from '@/components/page/AppPage';
 
 export default {
   setup() {
   },
   components: {
-    SubReddit,
+    AppPage,
   },
 }
 </script>
