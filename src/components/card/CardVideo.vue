@@ -6,17 +6,28 @@
     <audio ref="audioAutoPlay" loop="loop" muted="muted" :mediagroup="getVideoUrl()" type="audio/mp4">
         <source :src="getVideoAudio()" playsinline="true">
     </audio>
+
+    <!-- Video controllers -->
     <div class="playerControls">
+      <!-- Play - Pause button -->
       <button @click="toggleVideo()" class="playerControls-button">{{playing ? '►' : '❚❚'}}</button>
-      <div class="playerControls-progress">
+      
+      <!-- Change video/audio time and progress bar -->
+      <div @click="changeVideoTime($event)" ref="playerControlsProgress" class="playerControls-progress">
         <div ref="progressFilled" class="playerControls-progress-progressFilled"></div>
       </div>
+
+      <!-- Change video/audio volume -->
       <div v-if="hasSound" class="playerControls-volume">
         <button @click="toggleAudio()" class="playerControls-volume-volumeButton"> {{sound ? '+' : '-'}} </button>
-        <input @change="volumeChange($event)" type="range" name="volume" class="playerControls-volume-volumeRange" min="0" max="1" step="0.05" :value="volume">
+        <input @change="volumeChange($event)" type="range" class="playerControls-volume-volumeRange" min="0" max="1" step="0.05" :value="volume">
       </div>
-      <button class="playerControls-fullScreen">FullScreen</button>
+
+      <!-- Fullscreen button -->
+      <button @click="openFullscreen()" class="playerControls-fullScreen">FullScreen</button>
+
     </div>
+    <!-- /// Video controllers -->
   </div>
 </template>
 
@@ -33,11 +44,28 @@ export default {
     }
   },
   methods: {
+    changeVideoTime($event) {
+      const video = this.$refs.videoRef;
+      const audio = this.$refs.audioAutoPlay;
+      const scrubTime = ($event.offsetX / this.$refs.playerControlsProgress.offsetWidth) * video.duration;
+      video.currentTime = scrubTime;
+      audio.currentTime = scrubTime;
+    },
     getVideoUrl() {
       return this.videoUrl;
     },
     getVideoAudio() {
       return this.videoUrl.substring(0,32) + 'DASH_audio.mp4';
+    },
+    openFullscreen() {
+      const elem = this.$refs.videoRef;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) { /* Safari */
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { /* IE11 */
+        elem.msRequestFullscreen();
+      }
     },
     toggleVideo() {
       if(this.playButton) {
@@ -54,6 +82,7 @@ export default {
     },
     volumeChange($event) {
       this.volume = $event.target.value;
+      this.oldVolume = this.volume;
       this.$refs.audioAutoPlay.volume = this.volume;
       if(!this.sound && this.volume > 0) {
         this.$refs.audioAutoPlay.play();
@@ -75,12 +104,14 @@ export default {
         const videoBottom = playVideo.parentNode.parentElement.offsetTop + playVideo.offsetHeight;
         const isNotScrolledPast = window.scrollY < videoBottom;
 
-        if (isHalfShown && isNotScrolledPast && playVideo.readyState === 4) {
+        if (isHalfShown && isNotScrolledPast && playVideo.readyState === 4 && audio.readyState === 4) {
           if(playVideo.paused && !this.playing && this.playButton) {
             playVideo.play();
-            // if (audio.muted) {
-            //   audio.play();
-            // }
+            this.playing = true;
+          }
+        } else if(isHalfShown && isNotScrolledPast && playVideo.readyState === 4 && isNaN(audio.duration)) {
+          if(playVideo.paused && !this.playing && this.playButton) {
+            playVideo.play();
             this.playing = true;
           }
         } else {
@@ -172,7 +203,6 @@ export default {
   transition: all .3s;
 
   &-button {
-    // background-color: rgba(0,0,0,0.5);
     outline: none;
     border: none;
   }
@@ -182,12 +212,12 @@ export default {
     position: relative;
     display: flex;
     flex-basis: 100%;
-    height: 5px;
+    height: 10px;
     transition: height 0.3s;
     background: rgba(7, 104, 214, 0.5);
-    // cursor: ew-resize;
     align-self: center;
     margin: 0 10px;
+    cursor: ew-resize;
 
     &-progressFilled {
       background: #ffc600;
@@ -198,14 +228,27 @@ export default {
     position: relative;
     width: 50px;
 
-    &-volumeButton {
-
-    }
     &-volumeRange {
+      border: none;
+      outline: none;
+      opacity: 0;
+      padding: 10px 0;
       position: absolute;
       right: 0;
       width: 50px;
-      transform: rotateZ(-90deg) translate(90%, -100%) ;
+      height: 30px;
+      transform: rotateZ(-90deg) translateX(120%) ;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    &-volumeButton {
+
+      &:hover + .playerControls-volume-volumeRange {
+        opacity: 1;
+      }
     }
   }
 }
