@@ -1,4 +1,17 @@
-# reddit
+# Reddit
+https://reddit-api-tc.netlify.app/
+
+(nsfw blocked)
+# Used Tecnologies
+Vue.js v3
+
+Reddit API
+
+Netlify(Host)
+
+Axios
+
+Materialize css
 
 ## Project setup
 ```
