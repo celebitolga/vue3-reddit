@@ -11,6 +11,7 @@ export default createStore({
         data: []
       },
       search: [],
+      oldVolume: 0.0,
     };
   },
   mutations: {
@@ -19,6 +20,9 @@ export default createStore({
     },
     setSearch(state, payload) {
       state.search = payload;
+    },
+    setOldVolume(state, payload) {
+      state.oldVolume = payload;
     },
   },
   actions: {
@@ -72,6 +76,9 @@ export default createStore({
     getSearch(state) {
       return state.search;
     },
+    getOldVolume(state) {
+      return state.oldVolume;
+    }
   },
   modules: {}
 });

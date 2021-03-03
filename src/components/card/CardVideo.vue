@@ -36,26 +36,30 @@ export default {
   data() {
     return {
       volume: 0.0,
-      oldVolume: 0.0,
       hasSound: false,
       sound: false,
       playing: false,
       playButton: true,
     }
   },
+  computed: {
+    oldVolume() {
+      return this.$store.getters.getOldVolume;
+    }
+  },
   methods: {
+    getVideoUrl() {
+      return this.videoUrl;
+    },
+    getVideoAudio() {
+      return this.videoUrl.substring(0,32) + 'DASH_audio.mp4';
+    },
     changeVideoTime($event) {
       const video = this.$refs.videoRef;
       const audio = this.$refs.audioAutoPlay;
       const scrubTime = ($event.offsetX / this.$refs.playerControlsProgress.offsetWidth) * video.duration;
       video.currentTime = scrubTime;
       audio.currentTime = scrubTime;
-    },
-    getVideoUrl() {
-      return this.videoUrl;
-    },
-    getVideoAudio() {
-      return this.videoUrl.substring(0,32) + 'DASH_audio.mp4';
     },
     openFullscreen() {
       const elem = this.$refs.videoRef;
@@ -82,7 +86,7 @@ export default {
     },
     volumeChange($event) {
       this.volume = $event.target.value;
-      this.oldVolume = this.volume;
+      this.$store.commit('setOldVolume', this.volume);
       this.$refs.audioAutoPlay.volume = this.volume;
       if(!this.sound && this.volume > 0) {
         this.$refs.audioAutoPlay.play();
@@ -133,7 +137,7 @@ export default {
       } else if(!this.sound && this.volume != 0) {
         this.$refs.audioAutoPlay.volume = this.volume;
       } else {
-        this.oldVolume = this.volume;
+        this.$store.commit('setOldVolume', this.volume);
         this.volume = 0.0;
       }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="card cardControl">
+  <div class="card cardControl" v-if="!post.over_18">
 
     <CardImage v-if="isImage && !post.is_video" :post="post"/>
 
