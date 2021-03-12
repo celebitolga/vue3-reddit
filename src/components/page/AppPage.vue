@@ -1,6 +1,6 @@
 <template>
   <Loading v-if="postsState.loading"/>
-  
+
   <Error v-if="postsState.error" :error="postsState.error"/>
 
   <Cards :posts="posts"/>

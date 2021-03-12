@@ -5,14 +5,16 @@
 
     <CardCarousel v-if="post.media_metadata" :images="post.media_metadata"/>
 
-    <CardVideo v-if="isVideo" :videoUrl="videoUrl"/>
+    <!-- <CardVideo v-if="isVideo" :videoUrl="videoUrl"/> -->
+
+    <CardVideo2 v-if="isVideo" :videoUrl="videoUrl"/>
 
     <div class="card-content">
       <div v-if="post.media_metadata" class="sliderControl">Slider</div>
       <span class="card-title activator grey-text text-darken-4 titleControl"> {{post.title}} </span>
       <p><a :href="`https://reddit.com${post.permalink}`">{{post.num_comments}} Comments</a></p>
     </div>
-    
+
   </div>
 </template>
 
@@ -20,6 +22,7 @@
 import CardCarousel from '@/components/card/CardCarousel';
 import CardImage from '@/components/card/CardImage';
 import CardVideo from '@/components/card/CardVideo';
+import CardVideo2 from '@/components/card/CardVideo2';
 
 import { computed } from 'vue';
 
@@ -29,22 +32,21 @@ export default {
     const isImage = computed(() => props.post.url.match(/bmp|webp|png|jpg|jpeg|gif|gifv$/));
 
     const isVideo = computed(() => {
-      if(props.post.crosspost_parent_list) {
+      if (props.post.crosspost_parent_list) {
         return props.post.crosspost_parent_list[0].is_video;
       }
-      if(props.post.is_video) {
+      if (props.post.is_video) {
         return true;
       }
       return false;
     });
 
     const videoUrl = computed(() => {
-      if(props.post.crosspost_parent_list != null && props.post.crosspost_parent_list[0].is_video) {
+      if (props.post.crosspost_parent_list != null && props.post.crosspost_parent_list[0].is_video) {
         return props.post.crosspost_parent_list[0].secure_media.reddit_video.fallback_url;
       }
       return props.post.secure_media.reddit_video.fallback_url;
     });
-
 
     return {
       isImage,
@@ -62,6 +64,7 @@ export default {
     CardCarousel,
     CardImage,
     CardVideo,
+    CardVideo2,
   },
 }
 </script>

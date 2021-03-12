@@ -34,7 +34,7 @@
         </svg>
       </div>
       <!-- <button @click="toggleVideo()" class="playerControls-button">{{playing ? '►' : '❚❚'}}</button> -->
-      
+
       <!-- Change video/audio time and progress bar -->
       <div @click="changeVideoTime($event)" ref="playerControlsProgress" class="playerControls-progress">
         <div ref="progressFilled" class="playerControls-progress-progressFilled"></div>
@@ -222,7 +222,7 @@ export default {
       }
     },
     handleProgress() {
-      if(this.$refs.audioAutoPlay.duration > 0) {
+      if (this.$refs.audioAutoPlay.duration > 0) {
         this.hasSound = true;
         this.$refs.audioAutoPlay.currentTime = this.$refs.videoRef.currentTime;
       }
@@ -234,7 +234,7 @@ export default {
     setTimeout(() => {
       window.addEventListener('scroll', this.playVideo);
       this.$refs.videoRef.addEventListener('timeupdate', this.handleProgress);
-    },50);
+    }, 50);
   },
   unmounted() {
     window.removeEventListener('scroll', this.playVideo);

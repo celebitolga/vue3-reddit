@@ -13,6 +13,8 @@ Axios
 
 Materialize css
 
+Plyr (Video Player)
+
 ## Project setup
 ```
 yarn install
