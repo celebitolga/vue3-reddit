@@ -36,11 +36,12 @@ export default {
     return {
       loading: true,
       volume: 0.0,
-      hasSound: false,
-      sound: false,
-      playing: false,
-      playButton: true,
     };
+  },
+  computed: {
+    oldVolume() {
+      return this.$store.getters.getOldVolume;
+    }
   },
   props: {
     videoUrl: {
@@ -92,7 +93,8 @@ export default {
       const playAudio = this.$refs.audioAutoPlay;
       if (this.$refs.audioAutoPlay.duration > 0) {
         playAudio.currentTime = playVideo.currentTime;
-        playAudio.volume = playVideo.volume;
+        playAudio.volume = this.oldVolume;
+        playVideo.volume = this.oldVolume;
         playAudio.play();
       } else {
         // Hide volume controls if video has no audio
@@ -106,6 +108,10 @@ export default {
     handleVolumeChange() {
       const playVideo = this.$refs.plyr.player;
       const playAudio = this.$refs.audioAutoPlay;
+
+      this.volume = playVideo.volume;
+      this.$store.commit('setOldVolume', this.volume);
+
       if (playVideo.muted) {
         playAudio.volume = 0;
         playVideo.volume = 0;
