@@ -78,6 +78,7 @@ export default {
     width: 100%;
     max-width: 640px;
     margin: 0 auto;
+    margin-bottom: 10px;
   }
 
   .titleControl {

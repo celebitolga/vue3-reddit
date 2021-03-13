@@ -15,6 +15,8 @@ Materialize css
 
 Plyr (Video Player)
 
+Video.js(Video Player)
+
 ## Project setup
 ```
 yarn install

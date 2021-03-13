@@ -64,7 +64,6 @@ export default {
     handlePlayVideo() {
       const playVideo = this.$refs.videoPlayer|| null;
       // eslint-disable-next-line prefer-destructuring
-      const videoRef = this.$refs.videoRef;
       const playAudio = this.$refs.audioAutoPlay;
       
       if (playVideo != null) {
@@ -73,14 +72,13 @@ export default {
         const videoBottom = playVideo.parentNode.parentElement.offsetParent.offsetTop + playVideo.offsetHeight;
         const isNotScrolledPast = window.scrollY < videoBottom;
 
-
         if (isHalfShown && isNotScrolledPast && playVideo.readyState === 4) {
           if (playVideo.paused && !this.playing && !this.videoPaused) {
             playVideo.play();
             playAudio.play();
             this.playing = true;
           }
-        } else if (isHalfShown && isNotScrolledPast && videoRef.readyState === 4 && isNaN(playAudio.duration)) {
+        } else if (isHalfShown && isNotScrolledPast && playVideo.readyState === 4 && isNaN(playAudio.duration)) {
           if (playVideo.paused && !this.playing && !this.videoPaused) {
             playVideo.play();
             playAudio.play();
@@ -96,8 +94,16 @@ export default {
     handleProgress() {
       const playVideo = this.$refs.videoPlayer;
       const playAudio = this.$refs.audioAutoPlay;
-      playAudio.volume = this.oldVolume;
-      playVideo.volume = this.oldVolume;
+
+      if (this.oldVolume == null) {
+        playAudio.volume = 0;
+        playVideo.volume = 0;
+      } else {
+        playAudio.volume = this.oldVolume;
+        playVideo.volume = this.oldVolume;
+        playAudio.play();
+      }
+
       if (playAudio.duration > 0) {
         if (this.firstPlay) {
           playAudio.currentTime = playVideo.currentTime;
@@ -141,12 +147,17 @@ export default {
 
       this.volume = playVideo.volume;
       this.$store.commit('setOldVolume', this.volume);
-
-      if (playVideo.muted) {
+      if (playVideo.muted && this.oldVolume == 0) {
         playAudio.volume = 0;
         playVideo.volume = 0;
       } else {
         playAudio.volume = playVideo.volume;
+      }
+      // ! Fix this
+      if (playVideo.muted && this.oldVolume != 0) {
+        playVideo.volume = 0;
+        playAudio.volume = 0;
+        this.$store.commit("setOldVolume", 0);
       }
     },
     handleFullScreenChange() {
@@ -163,6 +174,9 @@ export default {
     },
     handleCanPlay() {
       this.loading = false;
+    },
+    handleUpdate() {
+      console.log("object")
     },
   },
   mounted() {
@@ -184,22 +198,7 @@ export default {
       player.on('volumechange', this.handleVolumeChange);
       player.on('fullscreenchange', this.handleFullScreenChange);
       player.on('loadstart', this.handleLoadStart);
-
-      // const playVideo = this.$refs.plyr.player;
-      // const videoClick = this.$refs.videoControl;
-      // videoClick.addEventListener('click', this.handlePauseVideo);
-      // playVideo.on('canplay', () => {
-      //   window.addEventListener('scroll', this.handlePlayVideo);
-      //   this.handleCanPlay();
-      // });
-      // playVideo.on('timeupdate', this.handleProgress);
-      // playVideo.on('seeked', this.handleSeeked);
-      // playVideo.on('pause', this.handlePauseVideo);
-      // playVideo.on('playing', this.handlePlayingVideo);
-      // playVideo.on('volumechange', this.handleVolumeChange);
-      // playVideo.on('enterfullscreen', this.handleEnterFullScreen);
-      // playVideo.on('exitfullscreen', this.handleExitFullScreen);
-      // playVideo.on('loadstart', this.handleLoadStart);
+      player.on('update', this.handleUpdate);
     }, 50);
   },
 };
@@ -220,7 +219,7 @@ export default {
   //   transform: translate(-50%, -50%);
   // }
 
-  video {
+  .video-js {
     width: 100%;
     max-width: 640px;
     max-height: 650px;

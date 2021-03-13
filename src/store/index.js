@@ -11,7 +11,7 @@ export default createStore({
         data: []
       },
       search: [],
-      oldVolume: 0.0,
+      oldVolume: null,
     };
   },
   mutations: {
