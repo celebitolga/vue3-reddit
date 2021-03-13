@@ -36,7 +36,10 @@ export default {
     return {
       loading: true,
       volume: 0.0,
+      videoPaused: false,
       firstPlay: true,
+      playing: false,
+      timeUpdate: false,
     };
   },
   computed: {
@@ -48,7 +51,6 @@ export default {
     videoUrl: {
       type: String,
       required: true,
-      playing: false,
     },
   },
   methods: {
@@ -62,7 +64,7 @@ export default {
       const playVideo = this.$refs.plyr.player || null;
       // eslint-disable-next-line prefer-destructuring
       const videoRef = this.$refs.videoRef;
-      const audio = this.$refs.audioAutoPlay;
+      const playAudio = this.$refs.audioAutoPlay;
 
       if (playVideo != null) {
         const slideInAt = (window.scrollY + window.innerHeight) - playVideo.elements.container.offsetHeight / 2;
@@ -71,21 +73,21 @@ export default {
         const isNotScrolledPast = window.scrollY < videoBottom;
 
 
-        if (isHalfShown && isNotScrolledPast && videoRef.readyState === 4 && audio.readyState === 4) {
-          if (playVideo.paused && !this.playing) {
+        if (isHalfShown && isNotScrolledPast && videoRef.readyState === 4 && playAudio.readyState === 4) {
+          if (playVideo.paused && !this.playing && !this.videoPaused) {
             playVideo.play();
-            audio.play();
+            playAudio.play();
             this.playing = true;
           }
-        } else if (isHalfShown && isNotScrolledPast && videoRef.readyState === 4 && isNaN(audio.duration)) {
-          if (playVideo.paused && !this.playing) {
+        } else if (isHalfShown && isNotScrolledPast && videoRef.readyState === 4 && isNaN(playAudio.duration)) {
+          if (playVideo.paused && !this.playing && !this.videoPaused) {
             playVideo.play();
-            audio.play();
+            playAudio.play();
             this.playing = true;
           }
         } else if (!playVideo.paused) {
           playVideo.pause();
-          audio.pause();
+          playAudio.pause();
           this.playing = false;
         }
       }
@@ -93,19 +95,44 @@ export default {
     handleProgress() {
       const playVideo = this.$refs.plyr.player;
       const playAudio = this.$refs.audioAutoPlay;
+      playAudio.volume = this.oldVolume;
+      playVideo.volume = this.oldVolume;
       if (this.$refs.audioAutoPlay.duration > 0) {
-        playAudio.currentTime = playVideo.currentTime;
-        playAudio.volume = this.oldVolume;
-        playVideo.volume = this.oldVolume;
-        playAudio.play();
+        if (this.firstPlay) {
+          playAudio.currentTime = playVideo.currentTime;
+          this.firstPlay = false;
+          playAudio.play();
+        }
+
+        if (this.timeUpdate && this.playing) {
+          playAudio.currentTime = playVideo.currentTime;
+          playAudio.play();
+          this.timeUpdate = false;
+        }
       } else {
         // Hide volume controls if video has no audio
         playVideo.elements.controls.children[3].style.display = 'none';
       }
     },
-    handlePauseVideo() {
+    handleSeeked() {
+      this.timeUpdate = true;
+    },
+    handlePauseVideo(event) {
+      if (event.type == "click") {
+        if (!event.target.className.plyr__control) {
+          this.videoPaused = true;
+        }
+      } else {
+        const playAudio = this.$refs.audioAutoPlay;
+        this.playing = false;
+        playAudio.pause();
+      }
+    },
+    handlePlayingVideo() {
       const playAudio = this.$refs.audioAutoPlay;
-      playAudio.pause();
+      this.playing = true;
+      this.videoPaused = false;
+      playAudio.play();
     },
     handleVolumeChange() {
       const playVideo = this.$refs.plyr.player;
@@ -137,12 +164,16 @@ export default {
   mounted() {
     setTimeout(() => {
       const playVideo = this.$refs.plyr.player;
+      const videoClick = this.$refs.videoControl;
+      videoClick.addEventListener('click', this.handlePauseVideo);
       playVideo.on('canplay', () => {
         window.addEventListener('scroll', this.handlePlayVideo);
         this.handleCanPlay();
       });
       playVideo.on('timeupdate', this.handleProgress);
+      playVideo.on('seeked', this.handleSeeked);
       playVideo.on('pause', this.handlePauseVideo);
+      playVideo.on('playing', this.handlePlayingVideo);
       playVideo.on('volumechange', this.handleVolumeChange);
       playVideo.on('enterfullscreen', this.handleEnterFullScreen);
       playVideo.on('exitfullscreen', this.handleExitFullScreen);
