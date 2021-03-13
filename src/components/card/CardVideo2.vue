@@ -36,6 +36,7 @@ export default {
     return {
       loading: true,
       volume: 0.0,
+      firstPlay: true,
     };
   },
   computed: {
@@ -47,6 +48,7 @@ export default {
     videoUrl: {
       type: String,
       required: true,
+      playing: false,
     },
   },
   methods: {
@@ -70,13 +72,13 @@ export default {
 
 
         if (isHalfShown && isNotScrolledPast && videoRef.readyState === 4 && audio.readyState === 4) {
-          if (playVideo.paused && !this.playing && this.playButton) {
+          if (playVideo.paused && !this.playing) {
             playVideo.play();
             audio.play();
             this.playing = true;
           }
         } else if (isHalfShown && isNotScrolledPast && videoRef.readyState === 4 && isNaN(audio.duration)) {
-          if (playVideo.paused && !this.playing && this.playButton) {
+          if (playVideo.paused && !this.playing) {
             playVideo.play();
             audio.play();
             this.playing = true;

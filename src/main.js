@@ -9,7 +9,5 @@ import "vue-plyr/dist/vue-plyr.css";
 createApp(App)
   .use(store)
   .use(router)
-  .use(VuePlyr, {
-    plyr: {},
-  })
+  .use(VuePlyr)
   .mount("#app");
