@@ -7,7 +7,9 @@
 
     <!-- <CardVideo v-if="isVideo" :videoUrl="videoUrl"/> -->
 
-    <CardVideo2 v-if="isVideo" :videoUrl="videoUrl"/>
+    <!-- <CardVideo2 v-if="isVideo" :videoUrl="videoUrl"/> -->
+
+    <CardVideo3 v-if="isVideo" :videoUrl="videoUrl"/>
 
     <div class="card-content">
       <div v-if="post.media_metadata" class="sliderControl">Slider</div>
@@ -23,6 +25,7 @@ import CardCarousel from '@/components/card/CardCarousel';
 import CardImage from '@/components/card/CardImage';
 import CardVideo from '@/components/card/CardVideo';
 import CardVideo2 from '@/components/card/CardVideo2';
+import CardVideo3 from '@/components/card/CardVideo3';
 
 import { computed } from 'vue';
 
@@ -65,6 +68,7 @@ export default {
     CardImage,
     CardVideo,
     CardVideo2,
+    CardVideo3,
   },
 }
 </script>
